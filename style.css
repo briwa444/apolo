@@ -1444,3 +1444,338 @@ html, body {
         line-height: 1.2;
     }
 }
+/* ===== HEADER ORIGINAL POUR PC ===== */
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--light);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+    text-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
+}
+
+.logo i {
+    color: var(--primary);
+}
+
+/* Navigation Desktop - Visible sur PC */
+.desktop-nav {
+    display: flex;
+}
+
+.desktop-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.desktop-nav a {
+    color: var(--light);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.desktop-nav a:hover {
+    color: var(--secondary);
+}
+
+.desktop-nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--secondary);
+    transition: width 0.3s;
+}
+
+.desktop-nav a:hover::after {
+    width: 100%;
+}
+
+/* Auth Buttons */
+.auth-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--light);
+    border: 2px solid var(--primary);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== MOBILE MENU (Caché sur PC) ===== */
+
+/* Hamburger Menu - Caché sur PC */
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.hamburger-menu span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: var(--light);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* Mobile Menu - Caché sur PC */
+.mobile-menu {
+    display: none;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+@media (max-width: 768px) {
+    /* Cacher la navigation desktop sur mobile */
+    .desktop-nav {
+        display: none !important;
+    }
+    
+    /* Afficher le hamburger menu sur mobile */
+    .hamburger-menu {
+        display: flex;
+    }
+    
+    /* Ajuster le header pour mobile */
+    .header-content {
+        position: relative;
+    }
+    
+    /* Mobile Menu Styles */
+    .mobile-menu {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        height: 100vh;
+        background: rgba(26, 26, 46, 0.98);
+        backdrop-filter: blur(20px);
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
+        z-index: 998;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+    
+    .mobile-menu.active {
+        left: 0;
+    }
+    
+    /* Overlay pour fermer le menu */
+    .mobile-menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 997;
+    }
+    
+    .mobile-menu-overlay.active {
+        display: block;
+    }
+    
+    .mobile-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        margin-top: 80px;
+    }
+    
+    .mobile-nav li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .mobile-nav li:last-child {
+        border-bottom: none;
+    }
+    
+    .mobile-nav a {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 18px 25px;
+        color: var(--light);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-nav a i {
+        width: 20px;
+        text-align: center;
+        color: var(--primary);
+    }
+    
+    .mobile-nav a:hover {
+        background: rgba(108, 92, 231, 0.2);
+        color: var(--secondary);
+        padding-left: 30px;
+    }
+    
+    /* Ajustements mobile pour les boutons auth */
+    .auth-buttons {
+        gap: 8px;
+    }
+    
+    .auth-buttons .btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        min-width: 70px;
+    }
+    
+    /* Ajuster le logo pour mobile */
+    .logo {
+        font-size: 1.4rem;
+    }
+    
+    .logo span {
+        display: none; /* Cache le texte sur mobile très petit */
+    }
+    
+    .logo i {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo span {
+        display: inline; /* Réaffiche le texte si assez d'espace */
+    }
+    
+    .auth-buttons .btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        min-width: 60px;
+    }
+    
+    .mobile-nav a {
+        padding: 15px 20px;
+        font-size: 1rem;
+    }
+}
+
+/* Animation du hamburger */
+.hamburger-menu.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+/* ===== FIX POUR LES BOUTONS MOBILE ===== */
+
+@media (max-width: 768px) {
+    /* Assurer que les boutons auth sont visibles */
+    .auth-buttons {
+        display: flex !important;
+        visibility: visible !important;
+        gap: 8px;
+    }
+    
+    .auth-buttons .btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        min-width: 70px;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Texte des boutons sur mobile */
+    .btn-text {
+        display: inline;
+    }
+    
+    /* Ajustements pour très petits écrans */
+    @media (max-width: 480px) {
+        .auth-buttons .btn {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            min-width: 60px;
+        }
+        
+        .btn-text {
+            display: none; /* Cache le texte sur très petits écrans */
+        }
+        
+        .auth-buttons .btn i {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+    }
+    
+    @media (max-width: 360px) {
+        .auth-buttons {
+            gap: 5px;
+        }
+        
+        .auth-buttons .btn {
+            min-width: 50px;
+            padding: 5px 8px;
+        }
+    }
+}
+
+/* S'assurer que les boutons sont toujours visibles */
+.auth-buttons {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
