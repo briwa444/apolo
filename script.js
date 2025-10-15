@@ -179,6 +179,194 @@ let sessionEndTime = null;
 let currentPage = 1;
 const gamesPerPage = 9;
 
+// Update profile UI function - VERSION CORRIGÉE
+function updateProfileUI() {
+    const isLoggedIn = localStorage.getItem('apolo_is_logged_in') === 'true';
+    
+    if (isLoggedIn && userProfile) {
+        // Update desktop navigation
+        document.getElementById('profile-link').style.display = 'block';
+        
+        // Update mobile navigation
+        mobileProfileLink.style.display = 'block';
+        
+        // Update auth buttons - VERSION CORRIGÉE POUR MOBILE
+        authButtons.innerHTML = `
+            <button class="btn btn-secondary" id="header-profile-btn">
+                <i class="fas fa-user"></i> 
+                <span class="btn-text">Profile</span>
+            </button>
+            <button class="btn btn-primary" id="header-logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="btn-text">Logout</span>
+            </button>
+        `;
+        
+        // Add event listeners to new buttons
+        document.getElementById('header-profile-btn').addEventListener('click', () => {
+            showPage('page8');
+        });
+        
+        document.getElementById('header-logout-btn').addEventListener('click', () => {
+            userProfile = null;
+            localStorage.removeItem('apolo_current_user');
+            localStorage.removeItem('apolo_is_logged_in');
+            updateProfileUI();
+            showNotification('Successfully logged out!', 'success');
+            showPage('page1');
+        });
+        
+    } else {
+        // Reset navigation
+        document.getElementById('profile-link').style.display = 'none';
+        mobileProfileLink.style.display = 'none';
+        
+        // Reset auth buttons - VERSION CORRIGÉE POUR MOBILE
+        authButtons.innerHTML = `
+            <button class="btn btn-secondary nav-link" data-page="page4">
+                <i class="fas fa-sign-in-alt"></i>
+                <span class="btn-text">Sign In</span>
+            </button>
+            <button class="btn btn-primary nav-link" data-page="page5">
+                <i class="fas fa-user-plus"></i>
+                <span class="btn-text">Sign Up</span>
+            </button>
+        `;
+        
+        // Ré-attacher les event listeners
+        document.querySelectorAll('.auth-buttons .nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+    }
+}
+
+// Code de débogage pour vérifier l'état des boutons
+function debugAuthButtons() {
+    console.log('Auth buttons debug:');
+    console.log('Element:', document.getElementById('auth-buttons'));
+    console.log('Display style:', document.getElementById('auth-buttons').style.display);
+    console.log('Visibility:', document.getElementById('auth-buttons').style.visibility);
+    console.log('Computed display:', window.getComputedStyle(document.getElementById('auth-buttons')).display);
+}
+
+// Appeler cette fonction si les boutons ne s'affichent pas
+// debugAuthButtons();
+
+// Hamburger Menu Functionality
+const hamburgerMenu = document.getElementById('hamburger-menu');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileProfileLink = document.getElementById('mobile-profile-link');
+
+// Créer l'overlay
+const overlay = document.createElement('div');
+overlay.className = 'mobile-menu-overlay';
+document.body.appendChild(overlay);
+
+// Toggle mobile menu
+hamburgerMenu.addEventListener('click', function(e) {
+    e.stopPropagation();
+    this.classList.toggle('active');
+    mobileMenu.classList.toggle('active');
+    overlay.classList.toggle('active');
+    
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+});
+
+// Fermer le menu en cliquant sur l'overlay
+overlay.addEventListener('click', closeMobileMenu);
+
+// Close mobile menu when clicking on a link
+document.querySelectorAll('.mobile-nav .nav-link').forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+});
+
+// Close mobile menu function
+function closeMobileMenu() {
+    hamburgerMenu.classList.remove('active');
+    mobileMenu.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Update profile UI function (identique à avant)
+function updateProfileUI() {
+    const isLoggedIn = localStorage.getItem('apolo_is_logged_in') === 'true';
+    
+    if (isLoggedIn && userProfile) {
+        // Update desktop navigation
+        document.getElementById('profile-link').style.display = 'block';
+        
+        // Update mobile navigation
+        mobileProfileLink.style.display = 'block';
+        
+        // Update auth buttons
+        authButtons.innerHTML = `
+            <button class="btn btn-secondary" id="header-profile-btn">
+                <i class="fas fa-user"></i> Profile
+            </button>
+            <button class="btn btn-primary" id="header-logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        `;
+        
+        // Add event listeners
+        document.getElementById('header-profile-btn').addEventListener('click', () => {
+            showPage('page8');
+        });
+        
+        document.getElementById('header-logout-btn').addEventListener('click', () => {
+            userProfile = null;
+            localStorage.removeItem('apolo_current_user');
+            localStorage.removeItem('apolo_is_logged_in');
+            updateProfileUI();
+            showNotification('Successfully logged out!', 'success');
+            showPage('page1');
+        });
+        
+    } else {
+        // Reset navigation
+        document.getElementById('profile-link').style.display = 'none';
+        mobileProfileLink.style.display = 'none';
+        
+        // Reset auth buttons
+        authButtons.innerHTML = `
+            <button class="btn btn-secondary nav-link" data-page="page4">Sign In</button>
+            <button class="btn btn-primary nav-link" data-page="page5">Sign Up</button>
+        `;
+        
+        // Add event listeners
+        document.querySelectorAll('.auth-buttons .nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+    }
+}
+
+// Initialize mobile menu
+function initMobileMenu() {
+    document.querySelectorAll('.mobile-nav .nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const pageId = this.getAttribute('data-page');
+            showPage(pageId);
+            closeMobileMenu();
+        });
+    });
+}
+
+// Dans ton DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    initMobileMenu();
+    // ... ton code existant ...
+});
 
 // User management system
 const users = JSON.parse(localStorage.getItem('apolo_users')) || [];
