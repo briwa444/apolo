@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APOLO Cloud Gaming - Premium Cloud Gaming Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Favicon APOLO personnalisé -->
+     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%236c5ce7'/><stop offset='100%25' stop-color='%23a29bfe'/></linearGradient></defs><rect width='32' height='32' rx='6' fill='url(%23grad)'/><text x='16' y='20' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold' font-size='8'>APOLO</text></svg>">
+    <!-- Animated Background -->
+    <div id="animated-bg">
+        <canvas id="particle-canvas"></canvas>
+        <div class="gradient-overlay"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo" id="logo-refresh">
+                    <i class="fas fa-gamepad"></i>
+                    <span>APOLO Cloud Gaming</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link" data-page="page1">Games</a></li>
+                        <li><a href="#" class="nav-link" data-page="page4" id="signin-link">Sign In</a></li>
+                        <li><a href="#" class="nav-link" data-page="page5" id="signup-link">Sign Up</a></li>
+                        <li><a href="#" class="nav-link" data-page="page6">Contact</a></li>
+                        <li><a href="#" class="nav-link" data-page="page7">Privacy</a></li>
+                        <li><a href="#" class="nav-link" data-page="page8" id="profile-link" style="display: none;">Profile</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="btn btn-secondary nav-link" data-page="page4">Sign In</button>
+                    <button class="btn btn-primary nav-link" data-page="page5">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Active Timer -->
+    <div class="active-timer" id="active-timer">
+        <div class="active-timer-title" id="active-game-title">Playing: GTA V</div>
+        <div class="active-timer-display" id="active-timer-display">04:00:00</div>
+    </div>
+
+    <!-- Page 1: Game Library -->
+    <section id="page1" class="page active">
+        <div class="container">
+            <h1 class="page-title">Popular Games</h1>
+            <p style="text-align: center; margin-bottom: 20px; color: #a29bfe;">Click "Let's Play" to start your gaming session</p>
+           
+            <div class="pagination" id="pagination">
+                <!-- Pagination buttons will be generated here -->
+            </div>
+            
+            <div class="game-grid" id="game-grid">
+                <!-- Game cards will be generated here -->
+            </div>
+           
+            <div class="pagination" id="pagination-bottom">
+                <!-- Pagination buttons will be generated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 2: Game Details -->
+    <section id="page2" class="page">
+        <div class="container">
+            <h1 class="page-title">Game Details</h1>
+            
+            <div class="game-details">
+                <img id="game-large-image" src="" alt="Game Image" class="game-large-image">
+                
+                <div class="timer-section">
+                    <h2 class="timer-title">Your Gaming Session</h2>
+                    <div class="timer">04:00:00</div>
+                    <p>You have 4 hours to enjoy this game. Timer starts when you click "Start Game".</p>
+                </div>
+                
+                <div class="email-form">
+                    <h2 class="form-title">Enter Your Email to Continue</h2>
+                    <input type="email" id="user-email" class="email-input" placeholder="your.email@example.com" required>
+                    <button id="start-game-btn" class="start-game-btn" disabled>Start Game</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 3: Game Launch -->
+    <section id="page3" class="page">
+        <div class="container">
+            <h1 class="page-title">Game Launch</h1>
+            
+            <div class="game-launch">
+                <img id="game-launch-image" src="" alt="Game Image" class="game-large-image">
+                
+                <div class="launch-info">
+                    <h2 class="launch-title">Ready to Play!</h2>
+                    <p>Your game session is ready. Click the button below to start playing.</p>
+                    <p>Your 4-hour session will begin once you launch the game.</p>
+                    
+                    <a href="https://www.instagram.com/polo__101/" id="play-game-link" class="play-link" target="_blank">
+                        <i class="fas fa-play-circle"></i> Play Now
+                    </a>
+                    
+                    <div>
+                        <a href="#" class="back-btn back-to-library">
+                            <i class="fas fa-arrow-left"></i> Back to Game Library
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 4: Sign In -->
+    <section id="page4" class="page">
+        <div class="container">
+            <h1 class="page-title">Sign In</h1>
+            
+            <div class="auth-form">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="signin-email" class="form-input" placeholder="your.email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="signin-password" class="form-input" placeholder="Enter your password">
+                </div>
+                
+                <button id="signin-btn" class="start-game-btn">Sign In</button>
+                
+                <div class="oauth-section">
+                    <div class="divider">
+                        <span>Or continue with</span>
+                    </div>
+                    <div class="oauth-buttons">
+                        <button class="oauth-btn google-btn" id="google-signin">
+                            <i class="fab fa-google"></i>
+                            Sign in with Google
+                        </button>
+                        <button class="oauth-btn github-btn" id="github-signin" style="display: none;">
+                            <i class="fab fa-github"></i>
+                            Sign in with GitHub
+                        </button>
+                    </div>
+                </div>
+                
+                <p style="text-align: center; margin-top: 20px;">
+                    Don't have an account? <a href="#" class="nav-link" data-page="page5" style="color: var(--secondary);">Sign Up</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 5: Sign Up -->
+    <section id="page5" class="page">
+        <div class="container">
+            <h1 class="page-title">Sign Up</h1>
+            
+            <div class="auth-form">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="signup-name" class="form-input" placeholder="Your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="signup-email" class="form-input" placeholder="your.email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="signup-password" class="form-input" placeholder="Create a password">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" id="signup-confirm" class="form-input" placeholder="Confirm your password">
+                </div>
+                
+                <button id="signup-btn" class="start-game-btn">Create Account</button>
+                
+                <div class="oauth-section">
+                    <div class="divider">
+                        <span>Or sign up with</span>
+                    </div>
+                    <div class="oauth-buttons">
+                        <button class="oauth-btn google-btn" id="google-signup">
+                            <i class="fab fa-google"></i>
+                            Sign up with Google
+                        </button>
+                    </div>
+                </div>
+                
+                <p style="text-align: center; margin-top: 20px;">
+                    Already have an account? <a href="#" class="nav-link" data-page="page4" style="color: var(--secondary);">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 6: Contact -->
+    <section id="page6" class="page">
+        <div class="container">
+            <h1 class="page-title">Contact Us</h1>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h3>Name</h3>
+                        <p>APOLO</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                        <h3>Email</h3>
+                        <p>ffsanji059@gmail.com</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div>
+                        <h3>Phone</h3>
+                        <p>+212 **** ****</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <h3>Location</h3>
+                        <p>Morocco</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div>
+                        <h3>Gaming Platform</h3>
+                        <p>APOLO Cloud Gaming - Premium Cloud Gaming Service</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 7: Privacy Policy -->
+    <section id="page7" class="page">
+        <div class="container">
+            <h1 class="page-title">Privacy Policy</h1>
+            
+            <div class="privacy-content">
+                <div class="privacy-section">
+                    <h3>1. Information We Collect</h3>
+                    <p>We collect information you provide directly to us when you create an account, use our services, or communicate with us. This may include your name, email address, payment information, and gaming preferences.</p>
+                </div>
+                
+                <div class="privacy-section">
+                    <h3>2. How We Use Your Information</h3>
+                    <p>We use the information we collect to provide, maintain, and improve our services, process your transactions, send you technical notices and support messages, and communicate with you about products, services, and promotional offers.</p>
+                </div>
+                
+                <div class="privacy-section">
+                    <h3>3. Information Sharing</h3>
+                    <p>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy or as required by law.</p>
+                </div>
+                
+                <div class="privacy-section">
+                    <h3>4. Data Security</h3>
+                    <p>We implement appropriate technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+                </div>
+                
+                <div class="privacy-section">
+                    <h3>5. Your Rights</h3>
+                    <p>You have the right to access, correct, or delete your personal information. You can also object to or restrict certain processing of your data. To exercise these rights, please contact us.</p>
+                </div>
+                
+                <div class="privacy-section">
+                    <h3>6. Changes to This Policy</h3>
+                    <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the effective date.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 8: User Profile -->
+    <section id="page8" class="page">
+        <div class="container">
+            <h1 class="page-title">User Profile</h1>
+            
+            <div class="profile-content">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profile-name">User Name</h2>
+                        <p id="profile-email">user@example.com</p>
+                        <p class="member-since">Member since: <span id="member-since">2023</span></p>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Games Played</h3>
+                            <p id="games-played">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Play Time</h3>
+                            <p id="total-play-time">0 hours</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Achievements</h3>
+                            <p id="achievements">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <button id="edit-profile-btn" class="btn btn-primary">Edit Profile</button>
+                    <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                </div>
+                
+                <div class="recent-games">
+                    <h3>Recently Played</h3>
+                    <div id="recent-games-list">
+                        <!-- Recent games will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 9: Edit Profile -->
+    <section id="page9" class="page">
+        <div class="container">
+            <h1 class="page-title">Edit Profile</h1>
+            
+            <div class="profile-edit-form">
+                <div class="form-section">
+                    <h3>Profile Information</h3>
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="edit-profile-name" class="form-input" placeholder="Your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="edit-profile-email" class="form-input" placeholder="your.email@example.com">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Change Password</h3>
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" id="current-password" class="form-input" placeholder="Enter current password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="new-password" class="form-input" placeholder="Enter new password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" id="confirm-new-password" class="form-input" placeholder="Confirm new password">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Gaming Preferences</h3>
+                    <div class="form-group">
+                        <label class="form-label">Favorite Genres</label>
+                        <div class="genres-grid">
+                            <label class="genre-checkbox">
+                                <input type="checkbox" name="genre" value="action"> Action
+                            </label>
+                            <label class="genre-checkbox">
+                                <input type="checkbox" name="genre" value="rpg"> RPG
+                            </label>
+                            <label class="genre-checkbox">
+                                <input type="checkbox" name="genre" value="racing"> Racing
+                            </label>
+                            <label class="genre-checkbox">
+                                <input type="checkbox" name="genre" value="sports"> Sports
+                            </label>
+                            <label class="genre-checkbox">
+                                <input type="checkbox" name="genre" value="fps"> FPS
+                            </label>
+                            <label class="genre-checkbox">
+                                <input type="checkbox" name="genre" value="adventure"> Adventure
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button id="save-profile-btn" class="btn btn-primary">Save Changes</button>
+                    <button id="cancel-edit-btn" class="btn btn-secondary">Cancel</button>
+                    <button id="delete-account-btn" class="btn btn-danger">Delete Account</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <i class="fas fa-gamepad"></i>
+                    <span>APOLO Cloud Gaming</span>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="#" class="nav-link" data-page="page1">Games</a>
+                    <a href="#" class="nav-link" data-page="page6">Contact</a>
+                    <a href="#" class="nav-link" data-page="page7">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                
+                <div class="copyright">
+                    &copy; 2023 APOLO Cloud Gaming. All rights reserved.
+                </div>
+            </div>
+            
+            <div class="partner-logos">
+                <a href="https://github.com" target="_blank" class="partner-logo">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://aws.amazon.com" target="_blank" class="partner-logo">
+                    <i class="fab fa-aws"></i>
+                </a>
+                <a href="https://cloud.google.com" target="_blank" class="partner-logo">
+                    <i class="fab fa-google"></i>
+                </a>
+                <a href="https://azure.microsoft.com" target="_blank" class="partner-logo">
+                    <i class="fab fa-microsoft"></i>
+                </a>
+                <a href="https://www.nvidia.com" target="_blank" class="partner-logo">
+                    <i class="fab fa-nvidia"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
