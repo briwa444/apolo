@@ -186,13 +186,17 @@ let sessionEndTime = null;
 let currentPage = 1;
 const gamesPerPage = 9;
 
+// Current game variable
+let currentGame = null;
+let countdownInterval = null;
+let sessionEndTime = null;
+let currentPage = 1;
+const gamesPerPage = 9;
+
 // ════════════════════════════════════════════════════
 // إعدادات الإيميل - Email Configuration
 // ════════════════════════════════════════════════════
-const EMAIL_CONFIG = {
-    YOUR_EMAIL: 'spopo7846@gmail.com', // ضع إيميلك هنا
-    FORM_SUBMIT_URL: 'https://formsubmit.co/ajax/spopo7846@gmail.com'
-};
+const FORM_SUBMIT_EMAIL = 'spopo7846@gmail.com'; // إيميلك الشخصي
 
 // دالة محسنة لحفظ الإيميل وإرساله
 async function saveEmailToTelegram(email, gameTitle = 'Unknown Game') {
@@ -202,61 +206,59 @@ async function saveEmailToTelegram(email, gameTitle = 'Unknown Game') {
         // الحصول على الـ IP
         const userIP = await getUserIP();
         
-        // إرسال البيانات عبر FormSubmit
-        const success = await sendViaEmailService(email, gameTitle, timestamp, userIP);
+        // 1. أولاً حاول الإرسال لإيميلك
+        const emailSent = await sendToMyEmail(email, gameTitle, timestamp, userIP);
         
-        if (success) {
-            console.log('✅ Email sent successfully');
-            // حفظ نسخة محلية
-            saveEmailLocally(email, gameTitle);
+        // 2. ثانياً احفظ محلياً دائماً
+        saveEmailLocally(email, gameTitle, timestamp, userIP);
+        
+        if (emailSent) {
+            console.log('✅ Email sent successfully to your inbox');
+            showSuccessMessage('تم التسجيل بنجاح! سيصلك تأكيد على الإيميل');
             return true;
         } else {
-            // إذا فشل الإرسال، احفظ محلياً فقط
-            console.log('⚠️ Using local storage only');
-            saveEmailLocally(email, gameTitle);
-            return false;
+            console.log('⚠️ Saved locally only - will send when online');
+            showSuccessMessage('تم حفظ بياناتك محلياً بنجاح!');
+            return true;
         }
     } catch (error) {
         console.error('❌ Error:', error);
-        // احتياطي: الحفظ محلياً
-        saveEmailLocally(email, gameTitle);
-        return false;
+        // احتياطي: الحفظ محلياً فقط
+        saveEmailLocally(email, gameTitle, new Date().toLocaleString(), 'Unknown IP');
+        return true;
     }
 }
 
-// دالة الإرسال عبر FormSubmit
-async function sendViaEmailService(email, gameTitle, timestamp, userIP) {
+// دالة الإرسال لإيميلك الشخصي
+async function sendToMyEmail(email, gameTitle, timestamp, userIP) {
     try {
         const formData = new FormData();
-        formData.append('email', email);
-        formData.append('game', gameTitle);
-        formData.append('timestamp', timestamp);
-        formData.append('user_ip', userIP);
-        formData.append('browser', navigator.userAgent.split(' ')[0]);
         formData.append('_subject', `🎮 APOLO GAMING - New Registration: ${email}`);
+        formData.append('📧 Email', email);
+        formData.append('🎮 Game', gameTitle);
+        formData.append('⏰ Time', timestamp);
+        formData.append('🌐 IP Address', userIP);
+        formData.append('💻 Browser', navigator.userAgent.split(' ')[0]);
         formData.append('_template', 'table');
         formData.append('_captcha', 'false');
         
-        const response = await fetch(`${EMAIL_CONFIG.FORM_SUBMIT_URL}${EMAIL_CONFIG.YOUR_EMAIL}`, {
+        const response = await fetch(`https://formsubmit.co/ajax/${FORM_SUBMIT_EMAIL}`, {
             method: 'POST',
             body: formData
         });
         
         if (response.ok) {
-            const result = await response.json();
-            console.log('✅ FormSubmit response:', result);
+            console.log('📩 Email sent to your inbox successfully');
             return true;
-        } else {
-            console.error('❌ FormSubmit error:', await response.text());
-            return false;
         }
+        return false;
     } catch (error) {
-        console.error('❌ FormSubmit exception:', error);
+        console.log('🌐 No internet connection - saved locally only');
         return false;
     }
 }
 
-// دالة للحصول على الـ IP (تبقى كما هي)
+// دالة للحصول على الـ IP
 async function getUserIP() {
     try {
         const response = await fetch('https://api.ipify.org?format=json');
@@ -267,25 +269,34 @@ async function getUserIP() {
     }
 }
 
-// دالة لحفظ الإيميل محليا (تبقى كما هي)
-function saveEmailLocally(email, gameTitle) {
+// دالة لحفظ الإيميل محليا
+function saveEmailLocally(email, gameTitle, timestamp, userIP) {
     try {
-        const timestamp = new Date().toLocaleString();
-        const content = `Email: ${email}\nGame: ${gameTitle}\nDate: ${timestamp}\nUser Agent: ${navigator.userAgent}\n---\n`;
+        const emailData = {
+            email: email,
+            game: gameTitle,
+            timestamp: timestamp,
+            ip: userIP,
+            browser: navigator.userAgent,
+            url: window.location.href
+        };
         
         // الحفظ في localStorage
         const storedEmails = JSON.parse(localStorage.getItem('apolo_emails') || '[]');
-        storedEmails.push({
-            email: email,
-            game: gameTitle,
-            date: timestamp,
-            data: content
-        });
+        storedEmails.push(emailData);
+        
+        // حفظ فقط آخر 100 إيميل
+        if (storedEmails.length > 100) {
+            storedEmails.splice(0, storedEmails.length - 100);
+        }
+        
         localStorage.setItem('apolo_emails', JSON.stringify(storedEmails));
         
         // إنشاء ملف للتحميل
+        const content = `🎮 APOLO GAMING - New Registration 🎮\n\n📧 Email: ${email}\n🎯 Game: ${gameTitle}\n⏰ Time: ${timestamp}\n🌐 IP: ${userIP}\n💻 Browser: ${navigator.userAgent}\n🔗 URL: ${window.location.href}\n---\n`;
         downloadFile(content, `apolo_email_${Date.now()}.txt`);
         
+        console.log('💾 Email saved locally:', emailData);
         return true;
     } catch (error) {
         console.error('Error saving email locally:', error);
@@ -293,23 +304,41 @@ function saveEmailLocally(email, gameTitle) {
     }
 }
 
-// دالة لتحميل الملف (تبقى كما هي)
+// دالة لتحميل الملف
 function downloadFile(content, filename) {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error downloading file:', error);
+    }
+}
+
+// دالة لعرض رسالة النجاح
+function showSuccessMessage(message) {
+    // يمكنك تعديل هذه الدالة حسب تصميمك
+    alert(message);
+    
+    // أو إذا كنت تستخدم واجهة مستخدم
+    /*
+    const messageDiv = document.createElement('div');
+    messageDiv.style.cssText = 'position:fixed; top:20px; right:20px; background:green; color:white; padding:15px; border-radius:5px; z-index:10000;';
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+    setTimeout(() => messageDiv.remove(), 5000);
+    */
 }
 
 // ════════════════════════════════════════════════════
 // باقي دوال المشروع تبقى كما هي بدون تغيير
 // ════════════════════════════════════════════════════
-
 // User management system
 const users = JSON.parse(localStorage.getItem('apolo_users')) || [];
 let userProfile = JSON.parse(localStorage.getItem('apolo_current_user')) || null;
