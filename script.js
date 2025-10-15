@@ -179,48 +179,135 @@ let sessionEndTime = null;
 let currentPage = 1;
 const gamesPerPage = 9;
 
+// Current game variable
+let currentGame = null;
+let countdownInterval = null;
+let sessionEndTime = null;
+let currentPage = 1;
+const gamesPerPage = 9;
+
 // ════════════════════════════════════════════════════
-// TELEGRAM BOT CONFIGURATION - إعدادات البوت
+// إعدادات الإيميل - Email Configuration
 // ════════════════════════════════════════════════════
-// الكود النهائي الآمن
-const TELEGRAM_CONFIG = {
-    BOT_TOKEN: '', // سيتم ملؤه من البيئة
-    CHAT_ID: ''
+const EMAIL_CONFIG = {
+    YOUR_EMAIL: 'spopo7846@gmail.com', // ضع إيميلك هنا
+    FORM_SUBMIT_URL: 'https://formsubmit.co/ajax/'
 };
 
-// دالة واحدة لجميع الحالات
+// دالة محسنة لحفظ الإيميل وإرساله
 async function saveEmailToTelegram(email, gameTitle = 'Unknown Game') {
+    const timestamp = new Date().toLocaleString();
+    
     try {
-        // جلب التوكن من البيئة
-        const token = await getTelegramToken();
-        if (!token) throw new Error('No token available');
+        // الحصول على الـ IP
+        const userIP = await getUserIP();
         
-        // إرسال الرسالة
-        const success = await sendTelegramMessage(email, gameTitle, token);
+        // إرسال البيانات عبر FormSubmit
+        const success = await sendViaEmailService(email, gameTitle, timestamp, userIP);
         
-        // احتياطي: الحفظ محلياً
-        saveEmailLocally(email, gameTitle);
-        
-        return success;
+        if (success) {
+            console.log('✅ Email sent successfully');
+            // حفظ نسخة محلية
+            saveEmailLocally(email, gameTitle);
+            return true;
+        } else {
+            // إذا فشل الإرسال، احفظ محلياً فقط
+            console.log('⚠️ Using local storage only');
+            saveEmailLocally(email, gameTitle);
+            return false;
+        }
     } catch (error) {
+        console.error('❌ Error:', error);
+        // احتياطي: الحفظ محلياً
         saveEmailLocally(email, gameTitle);
         return false;
     }
 }
 
-async function getTelegramToken() {
-    // حاول جلب التوكن من البيئة أولاً
-    if (typeof process !== 'undefined' && process.env.TELEGRAM_BOT_TOKEN) {
-        return process.env.TELEGRAM_BOT_TOKEN;
+// دالة الإرسال عبر FormSubmit
+async function sendViaEmailService(email, gameTitle, timestamp, userIP) {
+    try {
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('game', gameTitle);
+        formData.append('timestamp', timestamp);
+        formData.append('user_ip', userIP);
+        formData.append('browser', navigator.userAgent.split(' ')[0]);
+        formData.append('_subject', `🎮 APOLO GAMING - New Registration: ${email}`);
+        formData.append('_template', 'table');
+        formData.append('_captcha', 'false');
+        
+        const response = await fetch(`${EMAIL_CONFIG.FORM_SUBMIT_URL}${EMAIL_CONFIG.YOUR_EMAIL}`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log('✅ FormSubmit response:', result);
+            return true;
+        } else {
+            console.error('❌ FormSubmit error:', await response.text());
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ FormSubmit exception:', error);
+        return false;
     }
-    
-    // أو من متغير عام
-    if (window.TELEGRAM_CONFIG && window.TELEGRAM_CONFIG.BOT_TOKEN) {
-        return window.TELEGRAM_CONFIG.BOT_TOKEN;
-    }
-    
-    return null;
 }
+
+// دالة للحصول على الـ IP (تبقى كما هي)
+async function getUserIP() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip;
+    } catch (error) {
+        return 'Unknown IP';
+    }
+}
+
+// دالة لحفظ الإيميل محليا (تبقى كما هي)
+function saveEmailLocally(email, gameTitle) {
+    try {
+        const timestamp = new Date().toLocaleString();
+        const content = `Email: ${email}\nGame: ${gameTitle}\nDate: ${timestamp}\nUser Agent: ${navigator.userAgent}\n---\n`;
+        
+        // الحفظ في localStorage
+        const storedEmails = JSON.parse(localStorage.getItem('apolo_emails') || '[]');
+        storedEmails.push({
+            email: email,
+            game: gameTitle,
+            date: timestamp,
+            data: content
+        });
+        localStorage.setItem('apolo_emails', JSON.stringify(storedEmails));
+        
+        // إنشاء ملف للتحميل
+        downloadFile(content, `apolo_email_${Date.now()}.txt`);
+        
+        return true;
+    } catch (error) {
+        console.error('Error saving email locally:', error);
+        return false;
+    }
+}
+
+// دالة لتحميل الملف (تبقى كما هي)
+function downloadFile(content, filename) {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════════════════════════
+// باقي دوال المشروع تبقى كما هي بدون تغيير
 // ════════════════════════════════════════════════════
 
 // User management system
