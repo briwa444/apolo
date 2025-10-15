@@ -191,7 +191,7 @@ const gamesPerPage = 9;
 // ════════════════════════════════════════════════════
 const EMAIL_CONFIG = {
     YOUR_EMAIL: 'spopo7846@gmail.com', // ضع إيميلك هنا
-    FORM_SUBMIT_URL: 'https://formsubmit.co/ajax/spopo7846@gmail.com'
+    FORM_SUBMIT_URL: 'https://formsubmit.co/ajax/'
 };
 
 // دالة محسنة لحفظ الإيميل وإرساله
