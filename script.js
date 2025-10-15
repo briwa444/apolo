@@ -182,47 +182,31 @@ const gamesPerPage = 9;
 // ════════════════════════════════════════════════════
 // TELEGRAM BOT CONFIGURATION - إعدادات البوت
 // ════════════════════════════════════════════════════
-const TELEGRAM_CONFIG = {
-    BOT_TOKEN: '', // ma t7otch real token f frontend
-    CHAT_ID: ''    // khalli khali
-};
+const TELEGRAM_CONFIG = { BOT_TOKEN: '', CHAT_ID: '' };
+
 
 // دالة جديدة لحفظ الإيميل وإرساله ل Telegram
 async function saveEmailToTelegram(email, gameTitle = 'Unknown Game') {
-    const timestamp = new Date().toLocaleString();
-    
     try {
-        // الحصول على الـ IP
-        const userIP = await getUserIP();
-        
-        // إنشاء الرسالة
-        const message = `🎮 *APOLO GAMING - New Email Registration* 🎮\n\n📧 *Email:* ${email}\n🎯 *Game:* ${gameTitle}\n⏰ *Time:* ${timestamp}\n🌐 *IP:* ${userIP}\n💻 *Browser:* ${navigator.userAgent.split(' ')[0]}\n\n_Registered via APOLO Cloud Gaming Platform_`;
-        
-        // إرسال ل Telegram
-        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
+        const response = await fetch('https://your-server-or-action-endpoint', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CONFIG.CHAT_ID,
-                text: message,
-                parse_mode: 'Markdown'
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, gameTitle })
         });
-        
+
         if (response.ok) {
-            console.log('✅ Email sent to Telegram successfully');
+            console.log('✅ Email sent via Action');
             return true;
         } else {
-            console.error('❌ Failed to send to Telegram:', await response.text());
+            console.error('❌ Failed:', await response.text());
             return false;
         }
     } catch (error) {
-        console.error('❌ Error sending to Telegram:', error);
+        console.error('❌ Error:', error);
         return false;
     }
 }
+
 
 // دالة للحصول على الـ IP
 async function getUserIP() {
@@ -274,6 +258,7 @@ function downloadFile(content, filename) {
     URL.revokeObjectURL(url);
 }
 // ════════════════════════════════════════════════════
+
 // User management system
 const users = JSON.parse(localStorage.getItem('apolo_users')) || [];
 let userProfile = JSON.parse(localStorage.getItem('apolo_current_user')) || null;
