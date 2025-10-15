@@ -182,88 +182,44 @@ const gamesPerPage = 9;
 // ════════════════════════════════════════════════════
 // TELEGRAM BOT CONFIGURATION - إعدادات البوت
 // ════════════════════════════════════════════════════
-const TELEGRAM_CONFIG = { BOT_TOKEN: '', CHAT_ID: '' };
+// الكود النهائي الآمن
+const TELEGRAM_CONFIG = {
+    BOT_TOKEN: '', // سيتم ملؤه من البيئة
+    CHAT_ID: ''
+};
 
-
-// دالة جديدة لحفظ الإيميل وإرساله ل Telegram
+// دالة واحدة لجميع الحالات
 async function saveEmailToTelegram(email, gameTitle = 'Unknown Game') {
     try {
-        const response = await fetch('https://api.github.com/repos/YOUR_USERNAME/YOUR_REPO/dispatches', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/vnd.github+json',
-                'Authorization': 'token YOUR_PERSONAL_ACCESS_TOKEN'
-            },
-            body: JSON.stringify({
-                event_type: 'send_telegram_email',
-                client_payload: { email, gameTitle }
-            })
-        });
-
-        if (response.ok) {
-            console.log('✅ Email sent via Action');
-            return true;
-        } else {
-            console.error('❌ Failed:', await response.text());
-            return false;
-        }
+        // جلب التوكن من البيئة
+        const token = await getTelegramToken();
+        if (!token) throw new Error('No token available');
+        
+        // إرسال الرسالة
+        const success = await sendTelegramMessage(email, gameTitle, token);
+        
+        // احتياطي: الحفظ محلياً
+        saveEmailLocally(email, gameTitle);
+        
+        return success;
     } catch (error) {
-        console.error('❌ Error:', error);
+        saveEmailLocally(email, gameTitle);
         return false;
     }
 }
 
-
-
-// دالة للحصول على الـ IP
-async function getUserIP() {
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip;
-    } catch (error) {
-        return 'Unknown IP';
+async function getTelegramToken() {
+    // حاول جلب التوكن من البيئة أولاً
+    if (typeof process !== 'undefined' && process.env.TELEGRAM_BOT_TOKEN) {
+        return process.env.TELEGRAM_BOT_TOKEN;
     }
-}
-
-// دالة لحفظ الإيميل محليا
-function saveEmailLocally(email, gameTitle) {
-    try {
-        const timestamp = new Date().toLocaleString();
-        const content = `Email: ${email}\nGame: ${gameTitle}\nDate: ${timestamp}\nUser Agent: ${navigator.userAgent}\n---\n`;
-        
-        // الحفظ في localStorage
-        const storedEmails = JSON.parse(localStorage.getItem('apolo_emails') || '[]');
-        storedEmails.push({
-            email: email,
-            game: gameTitle,
-            date: timestamp,
-            data: content
-        });
-        localStorage.setItem('apolo_emails', JSON.stringify(storedEmails));
-        
-        // إنشاء ملف للتحميل
-        downloadFile(content, `apolo_email_${Date.now()}.txt`);
-        
-        return true;
-    } catch (error) {
-        console.error('Error saving email locally:', error);
-        return false;
+    
+    // أو من متغير عام
+    if (window.TELEGRAM_CONFIG && window.TELEGRAM_CONFIG.BOT_TOKEN) {
+        return window.TELEGRAM_CONFIG.BOT_TOKEN;
     }
-}
-
-// دالة لتحميل الملف
-function downloadFile(content, filename) {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    
+    return null;
 }
 // ════════════════════════════════════════════════════
 
