@@ -16,31 +16,69 @@
     </div>
 
     <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo" id="logo-refresh">
-                    <i class="fas fa-gamepad"></i>
-                    <span>APOLO Cloud Gaming</span>
-                </div>
-                <nav>
-                    <ul>
+<header>
+    <div class="container">
+        <div class="header-content">
+            <!-- Logo à gauche -->
+            <div class="logo" id="logo-refresh">
+                <i class="fas fa-gamepad"></i>
+                <span>APOLO Cloud Gaming</span>
+            </div>
+            
+            <!-- Navigation Desktop (visible sur PC) -->
+            <nav class="desktop-nav">
+                <ul>
                         <li><a href="#" class="nav-link" data-page="page1">Games</a></li>
                         <li><a href="#" class="nav-link" data-page="page4" id="signin-link">Sign In</a></li>
                         <li><a href="#" class="nav-link" data-page="page5" id="signup-link">Sign Up</a></li>
                         <li><a href="#" class="nav-link" data-page="page6">Contact</a></li>
                         <li><a href="#" class="nav-link" data-page="page7">Privacy</a></li>
                         <li><a href="#" class="nav-link" data-page="page8" id="profile-link" style="display: none;">Profile</a></li>
-                    </ul>
-                </nav>
-                <div class="auth-buttons" id="auth-buttons">
-                    <button class="btn btn-secondary nav-link" data-page="page4">Sign In</button>
-                    <button class="btn btn-primary nav-link" data-page="page5">Sign Up</button>
-                </div>
+                </ul>
+            </nav>
+            
+            <!-- Boutons d'authentification à droite - TOUJOURS VISIBLES -->
+            <div class="auth-buttons" id="auth-buttons">
+                <button class="btn btn-secondary nav-link" data-page="page4">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span class="btn-text">Sign In</span>
+                </button>
+                <button class="btn btn-primary nav-link" data-page="page5">
+                    <i class="fas fa-user-plus"></i>
+                    <span class="btn-text">Sign Up</span>
+                </button>
+            </div>
+            
+            
+            <!-- Hamburger Menu (caché sur PC) -->
+            <div class="hamburger-menu" id="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
-    </header>
-
+        
+        <!-- Mobile Menu (caché sur PC) -->
+        <div class="mobile-menu" id="mobile-menu">
+            <nav class="mobile-nav">
+                <ul>
+                    <li><a href="#" class="nav-link" data-page="page1">
+                        <i class="fas fa-gamepad"></i> Games
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-page="page6">
+                        <i class="fas fa-envelope"></i> Contact
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-page="page7">
+                        <i class="fas fa-shield-alt"></i> Privacy
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-page="page8" id="mobile-profile-link" style="display: none;">
+                        <i class="fas fa-user"></i> Profile
+                    </a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
     <!-- Active Timer -->
     <div class="active-timer" id="active-timer">
         <div class="active-timer-title" id="active-game-title">Playing: GTA V</div>
