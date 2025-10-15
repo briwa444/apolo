@@ -1,13 +1,15 @@
-name: Send Telegram
-on: workflow_dispatch
+name: Send Telegram Email
+
+on:
+  repository_dispatch:
+    types: [send_telegram_email]
 
 jobs:
-  send:
+  send_telegram:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Telegram
-        uses: appleboy/telegram-action@master
-        with:
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          to: ${{ secrets.CHAT_ID }}
-          message: "New Email: ${{ github.event.inputs.email }}, Game: ${{ github.event.inputs.gameTitle }}"
+      - name: Send email to Telegram
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+          -H 'Content-Type: application/json' \
+          -d "{\"chat_id\":\"${{ secrets.CHAT_ID }}\",\"text\":\"Email: ${{ github.event.client_payload.email }}, Game: ${{ github.event.client_payload.gameTitle }}\"}"
