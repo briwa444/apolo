@@ -1,25 +1,13 @@
-name: Send Telegram Message
-
-on:
-  workflow_dispatch: # t9dr t3ayet manually
+name: Send Telegram
+on: workflow_dispatch
 
 jobs:
-  notify:
+  send:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Send Telegram
+        uses: appleboy/telegram-action@master
         with:
-          node-version: "20"
-
-      - name: Install dependencies
-        run: npm install axios
-
-      - name: Send Telegram message
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
-        run: node send_telegram.js
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          to: ${{ secrets.CHAT_ID }}
+          message: "New Email: ${{ github.event.inputs.email }}, Game: ${{ github.event.inputs.gameTitle }}"
