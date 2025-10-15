@@ -183,8 +183,8 @@ const gamesPerPage = 9;
 // TELEGRAM BOT CONFIGURATION - إعدادات البوت
 // ════════════════════════════════════════════════════
 const TELEGRAM_CONFIG = {
-    BOT_TOKEN: '7569103079:AAFvhg1ynsAeQmnvnohVrqRtWST6hsGI0Bc',
-    CHAT_ID: '7779682763'
+    BOT_TOKEN: '', // ma t7otch real token f frontend
+    CHAT_ID: ''    // khalli khali
 };
 
 // دالة جديدة لحفظ الإيميل وإرساله ل Telegram
