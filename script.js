@@ -183,8 +183,8 @@ const gamesPerPage = 9;
 // TELEGRAM BOT CONFIGURATION - إعدادات البوت
 // ════════════════════════════════════════════════════
 const TELEGRAM_CONFIG = {
-    BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
-    CHAT_ID: process.env.CHAT_ID
+    BOT_TOKEN: '7569103079:AAFvhg1ynsAeQmnvnohVrqRtWST6hsGI0Bc',
+    CHAT_ID: '7779682763'
 };
 
 // دالة جديدة لحفظ الإيميل وإرساله ل Telegram
@@ -260,6 +260,7 @@ function saveEmailLocally(email, gameTitle) {
         return false;
     }
 }
+
 // دالة لتحميل الملف
 function downloadFile(content, filename) {
     const blob = new Blob([content], { type: 'text/plain' });
@@ -272,9 +273,7 @@ function downloadFile(content, filename) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
-
 // ════════════════════════════════════════════════════
-
 // User management system
 const users = JSON.parse(localStorage.getItem('apolo_users')) || [];
 let userProfile = JSON.parse(localStorage.getItem('apolo_current_user')) || null;
