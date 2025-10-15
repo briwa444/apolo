@@ -179,166 +179,7 @@ let sessionEndTime = null;
 let currentPage = 1;
 const gamesPerPage = 9;
 
-// Current game variable
-let currentGame = null;
-let countdownInterval = null;
-let sessionEndTime = null;
-let currentPage = 1;
-const gamesPerPage = 9;
 
-// Current game variable
-let currentGame = null;
-let countdownInterval = null;
-let sessionEndTime = null;
-let currentPage = 1;
-const gamesPerPage = 9;
-
-// ════════════════════════════════════════════════════
-// إعدادات الإيميل - Email Configuration
-// ════════════════════════════════════════════════════
-const FORM_SUBMIT_EMAIL = 'spopo7846@gmail.com'; // إيميلك الشخصي
-
-// دالة محسنة لحفظ الإيميل وإرساله
-async function saveEmailToTelegram(email, gameTitle = 'Unknown Game') {
-    const timestamp = new Date().toLocaleString();
-    
-    try {
-        // الحصول على الـ IP
-        const userIP = await getUserIP();
-        
-        // 1. أولاً حاول الإرسال لإيميلك
-        const emailSent = await sendToMyEmail(email, gameTitle, timestamp, userIP);
-        
-        // 2. ثانياً احفظ محلياً دائماً
-        saveEmailLocally(email, gameTitle, timestamp, userIP);
-        
-        if (emailSent) {
-            console.log('✅ Email sent successfully to your inbox');
-            showSuccessMessage('تم التسجيل بنجاح! سيصلك تأكيد على الإيميل');
-            return true;
-        } else {
-            console.log('⚠️ Saved locally only - will send when online');
-            showSuccessMessage('تم حفظ بياناتك محلياً بنجاح!');
-            return true;
-        }
-    } catch (error) {
-        console.error('❌ Error:', error);
-        // احتياطي: الحفظ محلياً فقط
-        saveEmailLocally(email, gameTitle, new Date().toLocaleString(), 'Unknown IP');
-        return true;
-    }
-}
-
-// دالة الإرسال لإيميلك الشخصي
-async function sendToMyEmail(email, gameTitle, timestamp, userIP) {
-    try {
-        const formData = new FormData();
-        formData.append('_subject', `🎮 APOLO GAMING - New Registration: ${email}`);
-        formData.append('📧 Email', email);
-        formData.append('🎮 Game', gameTitle);
-        formData.append('⏰ Time', timestamp);
-        formData.append('🌐 IP Address', userIP);
-        formData.append('💻 Browser', navigator.userAgent.split(' ')[0]);
-        formData.append('_template', 'table');
-        formData.append('_captcha', 'false');
-        
-        const response = await fetch(`https://formsubmit.co/ajax/${FORM_SUBMIT_EMAIL}`, {
-            method: 'POST',
-            body: formData
-        });
-        
-        if (response.ok) {
-            console.log('📩 Email sent to your inbox successfully');
-            return true;
-        }
-        return false;
-    } catch (error) {
-        console.log('🌐 No internet connection - saved locally only');
-        return false;
-    }
-}
-
-// دالة للحصول على الـ IP
-async function getUserIP() {
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip;
-    } catch (error) {
-        return 'Unknown IP';
-    }
-}
-
-// دالة لحفظ الإيميل محليا
-function saveEmailLocally(email, gameTitle, timestamp, userIP) {
-    try {
-        const emailData = {
-            email: email,
-            game: gameTitle,
-            timestamp: timestamp,
-            ip: userIP,
-            browser: navigator.userAgent,
-            url: window.location.href
-        };
-        
-        // الحفظ في localStorage
-        const storedEmails = JSON.parse(localStorage.getItem('apolo_emails') || '[]');
-        storedEmails.push(emailData);
-        
-        // حفظ فقط آخر 100 إيميل
-        if (storedEmails.length > 100) {
-            storedEmails.splice(0, storedEmails.length - 100);
-        }
-        
-        localStorage.setItem('apolo_emails', JSON.stringify(storedEmails));
-        
-        // إنشاء ملف للتحميل
-        const content = `🎮 APOLO GAMING - New Registration 🎮\n\n📧 Email: ${email}\n🎯 Game: ${gameTitle}\n⏰ Time: ${timestamp}\n🌐 IP: ${userIP}\n💻 Browser: ${navigator.userAgent}\n🔗 URL: ${window.location.href}\n---\n`;
-        downloadFile(content, `apolo_email_${Date.now()}.txt`);
-        
-        console.log('💾 Email saved locally:', emailData);
-        return true;
-    } catch (error) {
-        console.error('Error saving email locally:', error);
-        return false;
-    }
-}
-
-// دالة لتحميل الملف
-function downloadFile(content, filename) {
-    try {
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error('Error downloading file:', error);
-    }
-}
-
-// دالة لعرض رسالة النجاح
-function showSuccessMessage(message) {
-    // يمكنك تعديل هذه الدالة حسب تصميمك
-    alert(message);
-    
-    // أو إذا كنت تستخدم واجهة مستخدم
-    /*
-    const messageDiv = document.createElement('div');
-    messageDiv.style.cssText = 'position:fixed; top:20px; right:20px; background:green; color:white; padding:15px; border-radius:5px; z-index:10000;';
-    messageDiv.textContent = message;
-    document.body.appendChild(messageDiv);
-    setTimeout(() => messageDiv.remove(), 5000);
-    */
-}
-
-// ════════════════════════════════════════════════════
-// باقي دوال المشروع تبقى كما هي بدون تغيير
-// ════════════════════════════════════════════════════
 // User management system
 const users = JSON.parse(localStorage.getItem('apolo_users')) || [];
 let userProfile = JSON.parse(localStorage.getItem('apolo_current_user')) || null;
@@ -529,56 +370,26 @@ userEmailInput.addEventListener('input', () => {
 });
 
 // Start Game button
-startGameBtn.addEventListener('click', async () => {
+startGameBtn.addEventListener('click', () => {
     if (userEmailInput.value) {
-        const userEmail = userEmailInput.value;
-        const gameTitle = currentGame?.title || 'Unknown Game';
+        // Store email (in a real app, you would send this to a server)
+        localStorage.setItem('userEmail', userEmailInput.value);
         
-        // عرض رسالة الانتظار
-        const originalText = startGameBtn.textContent;
-        startGameBtn.disabled = true;
-        startGameBtn.textContent = 'Saving Email...';
+        // Start the timer
+        startGameTimer();
         
-        try {
-            // حفظ الإيميل وإرساله ل Telegram
-            const telegramSuccess = await saveEmailToTelegram(userEmail, gameTitle);
-            
-            // حفظ محليا
-            saveEmailLocally(userEmail, gameTitle);
-            
-            if (telegramSuccess) {
-                showNotification('✅ Email saved successfully! Starting game...', 'success');
-            } else {
-                showNotification('⚠️ Email saved locally! Starting game...', 'warning');
-            }
-            
-            // تخزين الإيميل في localStorage
-            localStorage.setItem('userEmail', userEmail);
-            
-            // بدأ المؤقت
-            startGameTimer();
-            
-            // تحديث الصفحة الثالثة
-            gameLaunchImage.src = currentGame.image;
-            gameLaunchImage.alt = currentGame.title;
-            playGameLink.href = "https://www.instagram.com/polo__101/";
-            
-            // عرض الصفحة الثالثة
-            showPage('page3');
-            
-            // إضافة للألعاب الحديثة إذا كان المستخدم مسجل الدخول
-            if (userProfile) {
-                addToRecentGames(currentGame);
-                updateUserStats(currentGame, 4);
-            }
-            
-        } catch (error) {
-            console.error('Error saving email:', error);
-            showNotification('❌ Error saving email, but starting game anyway...', 'error');
-        } finally {
-            // إعادة تعيين الزر
-            startGameBtn.disabled = false;
-            startGameBtn.textContent = originalText;
+        // Update page 3 with game details
+        gameLaunchImage.src = currentGame.image;
+        gameLaunchImage.alt = currentGame.title;
+        playGameLink.href = "https://www.instagram.com/polo__101/";
+        
+        // Show page 3
+        showPage('page3');
+        
+        // Add to user's recent games if logged in
+        if (userProfile) {
+            addToRecentGames(currentGame);
+            updateUserStats(currentGame, 4);
         }
     }
 });
