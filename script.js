@@ -188,10 +188,17 @@ const TELEGRAM_CONFIG = { BOT_TOKEN: '', CHAT_ID: '' };
 // دالة جديدة لحفظ الإيميل وإرساله ل Telegram
 async function saveEmailToTelegram(email, gameTitle = 'Unknown Game') {
     try {
-        const response = await fetch('https://your-server-or-action-endpoint', {
+        const response = await fetch('https://api.github.com/repos/YOUR_USERNAME/YOUR_REPO/dispatches', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, gameTitle })
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.github+json',
+                'Authorization': 'token YOUR_PERSONAL_ACCESS_TOKEN'
+            },
+            body: JSON.stringify({
+                event_type: 'send_telegram_email',
+                client_payload: { email, gameTitle }
+            })
         });
 
         if (response.ok) {
@@ -206,6 +213,7 @@ async function saveEmailToTelegram(email, gameTitle = 'Unknown Game') {
         return false;
     }
 }
+
 
 
 // دالة للحصول على الـ IP
