@@ -11,7 +11,7 @@ Premium Cloud Gaming Service - Play the latest games instantly in your browser.
 - 👤 User profiles & statistics
 
 ## Live Demo
-Visit: https://votre-username.github.io/apolo-cloud-gaming
+Visit: http://briwa444.github.io/apolo/
 
 ## Technologies
 - HTML5, CSS3, JavaScript
