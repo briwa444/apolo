@@ -147,7 +147,6 @@ const pagination = document.getElementById('pagination');
 const paginationBottom = document.getElementById('pagination-bottom');
 const gameLargeImage = document.getElementById('game-large-image');
 const gameLaunchImage = document.getElementById('game-launch-image');
-const userEmailInput = document.getElementById('user-email');
 const startGameBtn = document.getElementById('start-game-btn');
 const playGameLink = document.getElementById('play-game-link');
 const backToLibraryBtn = document.querySelector('.back-to-library');
@@ -540,47 +539,41 @@ navLinks.forEach(link => {
     });
 });
 
+
+// ==== SECTION DES EVENT LISTENERS ====
+
 // Logo refresh
 logoRefresh.addEventListener('click', () => {
     showPage('page1');
-    // Add refresh animation
     logoRefresh.style.transform = 'scale(1.1)';
     setTimeout(() => {
         logoRefresh.style.transform = 'scale(1)';
     }, 300);
 });
 
-// Email validation
-userEmailInput.addEventListener('input', () => {
-    const email = userEmailInput.value;
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    startGameBtn.disabled = !isValidEmail;
+// Start Game button - VERSION CORRIGÉE
+startGameBtn.addEventListener('click', () => {
+    // Start the timer
+    startGameTimer();
+    
+    // Update page 3 with game details
+    gameLaunchImage.src = currentGame.image;
+    gameLaunchImage.alt = currentGame.title;
+    playGameLink.href = "https://www.instagram.com/polo__101/";
+    
+    // Show page 3
+    showPage('page3');
+    
+    // Add to user's recent games if logged in
+    if (userProfile) {
+        addToRecentGames(currentGame);
+        updateUserStats(currentGame, 4);
+    }
+    
+    console.log('Game started:', currentGame.title); // Debug
 });
 
-// Start Game button
-startGameBtn.addEventListener('click', () => {
-    if (userEmailInput.value) {
-        // Store email (in a real app, you would send this to a server)
-        localStorage.setItem('userEmail', userEmailInput.value);
-        
-        // Start the timer
-        startGameTimer();
-        
-        // Update page 3 with game details
-        gameLaunchImage.src = currentGame.image;
-        gameLaunchImage.alt = currentGame.title;
-        playGameLink.href = "https://www.instagram.com/polo__101/";
-        
-        // Show page 3
-        showPage('page3');
-        
-        // Add to user's recent games if logged in
-        if (userProfile) {
-            addToRecentGames(currentGame);
-            updateUserStats(currentGame, 4);
-        }
-    }
-});
+
 
 // Start game timer function
 function startGameTimer() {
@@ -1047,12 +1040,7 @@ document.addEventListener('DOMContentLoaded', () => {
     generateGameCards(currentPage);
     generatePagination();
     
-    // Check if user email is stored
-    const storedEmail = localStorage.getItem('userEmail');
-    if (storedEmail) {
-        userEmailInput.value = storedEmail;
-        startGameBtn.disabled = false;
-    }
+
     
     // Check if user is logged in
     const isLoggedIn = localStorage.getItem('apolo_is_logged_in') === 'true';
