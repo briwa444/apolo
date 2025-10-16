@@ -464,31 +464,84 @@ nav a:hover::before {
     box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
 }
 
+/* ===== NEW START GAME SECTION ===== */
+
+.start-game-section {
+    background: rgba(45, 52, 54, 0.7);
+    padding: 25px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 600px;
+    margin: 30px auto;
+    text-align: center;
+}
+
 .start-game-btn {
     display: block;
     width: 100%;
-    padding: 15px;
-    background-color: var(--success);
+    padding: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 1.1rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.3rem;
     cursor: pointer;
     transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
 }
 
 .start-game-btn:hover {
-    background-color: #00a085;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(108, 92, 231, 0.6);
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
 }
 
-.start-game-btn:disabled {
-    background-color: #636e72;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+.start-game-btn:active {
+    transform: translateY(-2px);
+}
+
+/* Animation de pulse pour le bouton */
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(108, 92, 231, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(108, 92, 231, 0);
+    }
+}
+
+.start-game-btn {
+    animation: pulse-glow 2s infinite;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .start-game-section {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .start-game-btn {
+        padding: 18px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .start-game-section {
+        padding: 15px;
+    }
+    
+    .start-game-btn {
+        padding: 16px;
+        font-size: 1.1rem;
+    }
 }
 
 /* Page 3: Game Launch */
@@ -1778,4 +1831,10 @@ html, body {
 .auth-buttons {
     opacity: 1 !important;
     visibility: visible !important;
+}
+/* Hide old email form elements */
+.email-form,
+.form-title,
+.email-input {
+    display: none !important;
 }
