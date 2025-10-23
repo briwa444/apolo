@@ -559,7 +559,7 @@ startGameBtn.addEventListener('click', () => {
     // Update page 3 with game details
     gameLaunchImage.src = currentGame.image;
     gameLaunchImage.alt = currentGame.title;
-    playGameLink.href = "https://www.instagram.com/polo__101/";
+    playGameLink.href = "https://shrinkme.click/Play-Link";
     
     // Show page 3
     showPage('page3');
